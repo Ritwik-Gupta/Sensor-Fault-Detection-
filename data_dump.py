@@ -15,15 +15,15 @@ file_path = "aps_failure_training_set1.csv"
 
 
 if __name__ == "__main__":
-    #data = pd.read_csv(file_path)
-    #print(data.shape)
+    data = pd.read_csv(file_path)
+    print(data.shape)
     
-    #data.reset_index(inplace=True, drop=True)
+    data.reset_index(inplace=True, drop=True)
 
-    #json_records = list(json.loads(data.T.to_json()).values())
+    json_records = list(json.loads(data.T.to_json()).values())
 
-    #print(json_records[0])
+    print(json_records[0])
 
     #insert data into mongodb
-    #rec = collection.insert_many(json_records)
+    rec = collection.insert_many(json_records)
     pass
