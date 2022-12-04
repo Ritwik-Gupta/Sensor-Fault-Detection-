@@ -1,13 +1,5 @@
 from setuptools import find_packages, setup
-
-setup(
-    name="sensor",
-    version="0.0.1",
-    author="ritwik",
-    author_email="ritwik94348gupta@gmail.com",
-    packages = find_packages(),
-    install_requires = get_requirements()
-)
+from typing import List
 
 REQUIREMENTS_FILE_PATH = "./requirements.txt"
 HYPHEN_E_DOT = "-e ."
@@ -22,3 +14,13 @@ def get_requirements() -> List[str]:
         lines.remove(HYPHEN_E_DOT)
 
     return lines
+
+setup(
+    name="sensor",
+    version="0.0.1",
+    author="ritwik",
+    author_email="ritwik94348gupta@gmail.com",
+    packages = find_packages(),
+    install_requires = get_requirements()
+)
+

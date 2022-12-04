@@ -1,10 +1,10 @@
 dill==0.3.5.1
-pandas==1.5.2
 dnspython==2.2.1
 fastapi==0.78.0
 httptools==0.5.0
 imblearn==0.0
 mypy-boto3-s3==1.24.76
+pandas==1.5.2
 pip-chill==1.0.1
 pymongo==4.2.0
 python-dotenv==0.21.0
@@ -14,4 +14,3 @@ watchfiles==0.17.0
 websockets==10.3
 wincertstore==0.2
 xgboost==1.6.2
--e .
