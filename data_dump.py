@@ -2,7 +2,7 @@ import pymongo
 import pandas as pd
 import json
 
-client = pymongo.MongoClient("mongodb://localhost:27017/neurolabDB")
+client = pymongo.MongoClient("mongodb+srv://ritwik97:Arc%407245@cluster1.tkkbuh8.mongodb.net/?retryWrites=true&w=majority")
 
 # Database Name
 dataBase = client["SensorDB"]
@@ -15,15 +15,15 @@ file_path = "aps_failure_training_set1.csv"
 
 
 if __name__ == "__main__":
-    data = pd.read_csv(file_path)
-    print(data.shape)
-    
-    data.reset_index(inplace=True, drop=True)
+    try :
+        data = pd.read_csv(file_path)
+        print(data.shape)
+        data.reset_index(inplace=True, drop=True)
 
-    json_records = list(json.loads(data.T.to_json()).values())
+        json_records = list(json.loads(data.T.to_json()).values())
 
-    print(json_records[0])
+        print(json_records[0])
+        collection.insert_many(json_records)
 
-    #insert data into mongodb
-    rec = collection.insert_many(json_records)
-    pass
+    except Exception as e:
+        print(e)

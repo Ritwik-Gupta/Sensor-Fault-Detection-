@@ -1,20 +1,31 @@
 from sensor.exception import SensorException
 from sensor.logger import logging
 from sensor.utils import get_collection_as_dataframe
+from sensor.entity import config_entity 
+from sensor.components import data_ingestion,data_validation
 import sys
-
-def test_logger():
-     try:
-          logging.info("Logging Start")
-          return 3/0
-     except Exception as e:
-          raise SensorException(error_message=e, error_detail=sys)
 
 
 if __name__=="__main__":
      try:
-          logging.info("calling get_collection_as_dataframe function")
-          my_df = get_collection_as_dataframe(database_name="SensorDB", collection_name="SensorData")
-          print(my_df.head())
-     except Exception as e:
-          print(e)
+          #Training Pipeline
+          logging.info("Initiating Training Pipeline")
+          training_pipeline_config = config_entity.TrainingPiplelineConfig()
+
+          #Data Ingestion 
+          logging.info("Initiating Data Ingestion")
+          data_ingestion_config = config_entity.DataIngestionConfig(training_pipeline_config = training_pipeline_config)
+          data_ingestion = data_ingestion.DataIngestion(data_ingestion_config = data_ingestion_config)
+          data_ingestion_artifact = data_ingestion.initiate_data_ingestion()
+          logging.info("Data Ingestion completed")
+
+          #Data Validation
+          logging.info("Initiating Data Validation")
+          data_validation_config = config_entity.DataValidationConfig(training_pipeline_config)
+          data_validation = data_validation.DataValidation(data_validation_config=data_validation_config, 
+                              data_ingestion_config=data_ingestion_config)
+          data_validation_artifact = data_validation.initiate_data_validation()
+          logging.info("Data Validation Completed")
+
+     except Exception as ex:
+          raise SensorException(ex, sys)

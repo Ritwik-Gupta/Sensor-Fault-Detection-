@@ -1,8 +1,9 @@
 from sensor.logger import logging
 import pandas as pd
-import sys
+import sys,os
 from sensor.config import mongo_client
 from sensor.exception import SensorException
+import yaml
 
 def get_collection_as_dataframe(database_name:str,collection_name:str) -> pd.DataFrame:
     """
@@ -18,9 +19,23 @@ def get_collection_as_dataframe(database_name:str,collection_name:str) -> pd.Dat
         df = pd.DataFrame(list(mongo_client[database_name][collection_name].find()))
 
         if("_id" in df.columns):
-            df.drop(["_id"],axis=1,inplace=True)
+            df.drop(labels = ["_id"],axis=1,inplace=True)
             
         return df    
         
     except Exception as e:
         raise SensorException(e, sys)
+
+
+def write_yaml_files(file_path, data:dict):
+    try:
+        file_dirname = os.path.dirname(file_path)
+        os.makedirs(file_dirname, exist_ok=True)
+
+        with open(os.path.basename(file_path), "w") as my_file:
+            yaml.dump(data, my_file)
+
+    except Exception as ex:
+        raise SensorException(ex, sys)
+
+     
