@@ -16,3 +16,9 @@ env_vars = EnvironmentVariable()
 #create mongo connection
 mongo_client = pymongo.MongoClient(env_vars.mongodb_url)
 
+TARGET_COLUMN = "class"
+
+TARGET_COLUMN_ENCODING = {
+    "pos":1,
+    "neg":0
+}

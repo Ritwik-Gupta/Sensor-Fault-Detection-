@@ -1,9 +1,11 @@
 from sensor.logger import logging
 import pandas as pd
+import numpy as np
 import sys,os
 from sensor.config import mongo_client
 from sensor.exception import SensorException
 import yaml
+import dill
 
 def get_collection_as_dataframe(database_name:str,collection_name:str) -> pd.DataFrame:
     """
@@ -32,10 +34,45 @@ def write_yaml_files(file_path, data:dict):
         file_dirname = os.path.dirname(file_path)
         os.makedirs(file_dirname, exist_ok=True)
 
-        with open(os.path.basename(file_path), "w") as my_file:
+        with open(file_path, "w") as my_file:
             yaml.dump(data, my_file)
 
     except Exception as ex:
         raise SensorException(ex, sys)
 
-     
+def save_object(file_path:object, obj:str) -> None:
+    try:
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+        logging.info("Dumping pickle file into folder")
+        with open(file_path, "wb") as file_obj:
+            dill.dump(obj,file_obj)
+        logging.info("dumping completed")
+    except Exception as ex:
+        raise SensorException(ex, sys)
+
+def load_object(file_path:str) -> object:
+    try:
+        if not os.path.exists(file_path):
+            raise Exception(f"The specified file {file_path} does not exist!")
+        with open(file_path, "rb") as file_obj:
+            return dill.load(file_obj)
+    except Exception as ex:
+        raise SensorException(ex, sys)
+
+def save_numpy_array_data(file_path:str, np_array:np.arr):
+    try:
+        dir_path = os.path.dirname(file_path)
+        os.makedirs(dir_path, exist_ok=True)
+        with open(file_path, "wb") as file_obj:
+            np.save(file_obj, np_array)
+    except Exception as ex:
+        raise SensorException(ex, sys)
+
+def load_numpy_array_data(file_path:str) -> np.array:
+    try:
+        if not os.path.exists(file_path):
+            raise Exception(f"The specified file path {file_path} does not exist!!")
+        with open(file_path, "rb") as file_obj:
+            return np.load(file_obj)
+    except Exception as ex:
+        raise SensorException(ex, sys)

@@ -7,6 +7,7 @@ import os,sys
 from typing import Optional
 from scipy.stats import ks_2samp
 from sensor.utils import write_yaml_files
+from sensor import config
 
 class DataValidation:
     def __init__(self, 
@@ -130,7 +131,7 @@ class DataValidation:
             column_exist_check_test = self.is_required_colums_exists(base_df, test_df, report_key_name="removed_columns_test")
 
             #Coverting data types of columns before checking for data drift
-            columns_to_exclude = ["class"]
+            columns_to_exclude = config.TARGET_COLUMN
             base_df = self.convert_datatype_to_float(base_df, columns_to_exclude)
             train_df = self.convert_datatype_to_float(train_df, columns_to_exclude)
             test_df = self.convert_datatype_to_float(test_df, columns_to_exclude)
