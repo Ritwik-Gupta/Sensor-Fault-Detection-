@@ -3,6 +3,7 @@ from sensor.exception import SensorException
 import os,sys
 import xgboost as xgb
 from sensor import utils
+from sensor.logger import logging
 from sklearn.metrics import f1_score
 
 
@@ -11,7 +12,8 @@ class ModelTrainer:
             model_trainer_config:config_entity.ModelTrainerConfig,
             data_transformation_artifact:artifact_entity.DataTransformationArtifact):
         try:
-            pass
+            self.model_trainer_config = model_trainer_config
+            self.data_transformation_artifact = data_transformation_artifact
         
         except Exception as ex:
             raise SensorException(ex, sys)
@@ -25,9 +27,9 @@ class ModelTrainer:
             raise SensorException(ex, sys)
 
 
-    def initiate_model_trainer(self):
+    def initiate_model_training(self):
         try:
-            logging.info("======Model Training Starts======")
+            print(">>"*20 + "MODEL TRAINING STARTS" + "<<"*20)
             logging.info("Loading test and train numpy array after transformation")
             train_arr = utils.load_numpy_array_data(file_path=self.data_transformation_artifact.transformed_train_path)
             test_arr = utils.load_numpy_array_data(file_path=self.data_transformation_artifact.transformed_test_path)
@@ -37,7 +39,7 @@ class ModelTrainer:
             x_test,y_test = test_arr[:,:-1], test_arr[:,-1]
 
             logging.info("Training the model")
-            model = train_model(x_train, y_train)
+            model = self.train_model(x_train, y_train)
             y_hat_train = model.predict(x_train)
             y_hat_test = model.predict(x_test)
 
@@ -56,13 +58,13 @@ class ModelTrainer:
             #checking for overfitting
             diff = abs(f1score_test-f1score_train)
 
-            if diff < self.model_trainer_config.overfitting_threshold:
+            if diff > self.model_trainer_config.overfitting_threshold:
                 raise Exception(f"Difference b/w training and testing score is high || difference = {diff} \
                                 Expected diference should be less than {self.model_trainer_config.overfitting_threshold}")
 
             logging.info("Saving the model in model training directory")
             #save the trained model
-            utils.save_object(file_path=self.model_trainer_config.model_path, model=model)
+            utils.save_object(file_path=self.model_trainer_config.model_path, obj=model)
 
             logging.info("Preparing and returning the model training artifact")
             #preparing the Model Training artifact
@@ -71,7 +73,8 @@ class ModelTrainer:
                 f1_train_score = f1score_train,
                 f1_test_score = f1score_test
             )
-            logging.info("======Model Training Ends======")
+            logging.info(f"Model Training artifact: {model_trainer_artifact.__dict__}")
+            print(">>"*20 + "MODEL TRAINING ENDS" + "<<"*20)
 
             return model_trainer_artifact
 

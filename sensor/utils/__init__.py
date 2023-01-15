@@ -59,7 +59,7 @@ def load_object(file_path:str) -> object:
     except Exception as ex:
         raise SensorException(ex, sys)
 
-def save_numpy_array_data(file_path:str, np_array:np.arr):
+def save_numpy_array_data(file_path:str, np_array:np.array):
     try:
         dir_path = os.path.dirname(file_path)
         os.makedirs(dir_path, exist_ok=True)

@@ -1,20 +1,24 @@
 from sensor.entity import config_entity, artifact_entity
 from sensor.exception import SensorException
-from sklearn.preprocessing import Pipeline
+from sklearn.pipeline import Pipeline
 from imblearn.combine import SMOTETomek
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import RobustScaler 
 from sklearn.preprocessing import LabelEncoder
 from sensor.config import TARGET_COLUMN
+from sensor.logger import logging
+import pandas as pd
+import numpy as np
 from sensor import utils
 import os,sys
 
 class DataTransformation:
     def __init__(self, data_transformation_config: config_entity.DataTransformationConfig,
-                    data_transformation_artifact: artifact_entity.DataTransformationArtifact):
+                    data_ingestion_artifact:artifact_entity.DataIngestionArtifact):
         try:
+            logging.info(f"{'>>'*20} Data Transformation {'<<'*20}")
             self.data_transformation_config = data_transformation_config
-            self.data_transformation_artifact = data_transformation_artifact
+            self.data_ingestion_artifact = data_ingestion_artifact
         except Exception as e:
             raise SensorException(e, sys)
     
@@ -67,8 +71,8 @@ class DataTransformation:
             print("Shape of training dataset After sampling: {} , testing dataset: {}".format(input_feature_train_arr.shape, input_feature_test_arr.shape))
 
             #concate training and testing numpy arrays into single 2d arrays
-            training_array = np._c(input_feature_train_arr, target_feature_train_arr)
-            testing_array = np.c_(input_feature_test_arr, target_feature_test_arr)
+            training_array = np.c_[input_feature_train_arr, target_feature_train_arr]
+            testing_array = np.c_[input_feature_test_arr, target_feature_test_arr]
 
             #saving the training and testing numpy array as numpy object files
             utils.save_numpy_array_data(file_path = self.data_transformation_config.transformed_train_path,
@@ -86,10 +90,10 @@ class DataTransformation:
             
             #Preparing the data transformation artifact
             data_transformation_artifact = artifact_entity.DataTransformationArtifact(
-                transform_object_path = self.data_transformation_artifact.transform_object_path,
-                traformed_train_path = self.data_transformation_artifact.transformed_train_path,
-                transformed_test_path = self.data_transformation_artifact.transformed_test_path,
-                target_encoder_path = self.data_transformation_artifact.target_encoder_path
+                transform_object_path = self.data_transformation_config.transform_object_path,
+                transformed_train_path = self.data_transformation_config.transformed_train_path,
+                transformed_test_path = self.data_transformation_config.transformed_test_path,
+                target_encoder_path = self.data_transformation_config.target_encoder_path
             )
 
             logging.info(f"Data Transformation object {data_transformation_artifact}")
