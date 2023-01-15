@@ -40,7 +40,7 @@ def write_yaml_files(file_path, data:dict):
     except Exception as ex:
         raise SensorException(ex, sys)
 
-def save_object(file_path:object, obj:str) -> None:
+def save_object(file_path:str, obj:object) -> None:
     try:
         os.makedirs(os.path.dirname(file_path), exist_ok=True)
         logging.info("Dumping pickle file into folder")
